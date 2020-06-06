@@ -12,9 +12,9 @@ SUPPORT_ASYNC_CPU ?= 0
 SDL_VERSION ?= 1
 GIT_VERSION := "$(shell git rev-parse --short HEAD)"
 
-ifeq ($($(ODCONFIG), rx90)
+ifeq ($(ODCONFIG), rx90)
 SDL_VERSION ?= 2
-else ifeq ($($(ODCONFIG), gcw0)
+else ifeq ($(ODCONFIG), gcw0)
 SDL_VERSION ?= 1
 endif
 
