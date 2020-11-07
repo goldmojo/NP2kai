@@ -184,12 +184,17 @@ void taskmng_rol(void) {
 #else
 			if (e.key.keysym.scancode == SDL_SCANCODE_F11) {
 #endif
+			// EXIT ON L1
+			task_avail = FALSE;
+			break;
+			/*
 				if (menuvram == NULL) {
 					sysmenu_menuopen(0, 0, 0);
 				}
 				else {
 					menubase_close();
 				}
+			*/
 			}
 			else {
 #if SDL_MAJOR_VERSION == 1
