@@ -1,4 +1,5 @@
 # set ODCONFIG=gcw0 or ODCONFIG=rx90
+ODCONFIG=gcw0
 
 CC=/opt/$(ODCONFIG)-toolchain/usr/bin/mipsel-linux-cc
 AR=/opt/$(ODCONFIG)-toolchain/usr/bin/mipsel-linux-ar
@@ -47,7 +48,10 @@ fpic = -fPIC
 ifeq ($(DEBUG), 1)
 COMMONFLAGS += -O0 -g -DDEBUG -D_DEBUG -DTRACE
 else
-COMMONFLAGS += -O2 -DNDEBUG -D_NDEBUG
+COMMONFLAGS += -DNDEBUG -D_NDEBUG
+	ifneq ($(ODCONFIG), gcw0)
+		COMMONFLAGS += -O2
+	endif
 endif
 
 CORE_DIR := ..
@@ -71,6 +75,23 @@ OBJECTS  = $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
 CXXFLAGS += $(fpic) $(INCFLAGS) $(COMMONFLAGS) $(NP2DEFINE) -D__OPENDINGUX__ $(NP2SDLDEFINE) -DSUPPORT_NP2_TICKCOUNT -DSUPPORT_NP2_THREAD -std=gnu++11
 CFLAGS   += $(fpic) $(INCFLAGS) $(COMMONFLAGS) $(NP2DEFINE) -D__OPENDINGUX__ $(NP2SDLDEFINE) -DSUPPORT_NP2_TICKCOUNT -DSUPPORT_NP2_THREAD -std=gnu11
 LDFLAGS  += $(fpic) -lm -lpthread $(SDL_LIBS) $(SDL_OTHER_LIBS) -L/opt/$(ODCONFIG)-toolchain/usr/lib
+
+# Dedicated optimizations
+ifeq ($(ODCONFIG), gcw0)
+	GCW0_COMMON_FLAGS += -Ofast -fdata-sections -ffunction-sections -mno-fp-exceptions -mno-check-zero-division -fsingle-precision-constant -fno-common -march=mips32r2 -mtune=mips32r2 -flto -mno-shared -mplt
+	CXXFLAGS += $(GCW0_COMMON_FLAGS)
+	CFLAGS += $(GCW0_COMMON_FLAGS)
+	LDFLAGS += -Wl,--as-needed -Wl,--gc-sections -flto -s
+	# PGO (optional, 2 steps)
+	# STEP 1 #
+	# GCW0_COMMON_FLAGS += -fprofile-generate=/media/data/local/home/PGO
+	# LDFLAGS += -lgcov 
+	# LDFLAGS += $(CXXFLAGS) $(CFLAGS)
+	# LDFLAGS += -fprofile-generate=/media/data/local/home/PGO
+	# STEP 2 #
+	# GCW0_COMMON_FLAGS += -fprofile-use
+	# LDFLAGS += -fprofile-use
+endif
 
 all: buildopk
 $(TARGET): $(OBJECTS)
