@@ -83,14 +83,15 @@ ifeq ($(ODCONFIG), gcw0)
 	CFLAGS += $(GCW0_COMMON_FLAGS)
 	LDFLAGS += -Wl,--as-needed -Wl,--gc-sections -flto -s
 	# PGO (optional, 2 steps)
-	# STEP 1 #
-	# GCW0_COMMON_FLAGS += -fprofile-generate=/media/data/local/home/PGO
+	# STEP 1
+	# CXXFLAGS += -fprofile-generate=/media/data/local/home/PGO
+	# CFLAGS += -fprofile-generate=/media/data/local/home/PGO
 	# LDFLAGS += -lgcov 
 	# LDFLAGS += $(CXXFLAGS) $(CFLAGS)
-	# LDFLAGS += -fprofile-generate=/media/data/local/home/PGO
-	# STEP 2 #
-	# GCW0_COMMON_FLAGS += -fprofile-use
-	# LDFLAGS += -fprofile-use
+	# STEP 2
+	# CXXFLAGS += -fprofile-use
+	# CFLAGS   += -fprofile-use
+	# LDFLAGS  += -fprofile-use
 endif
 
 all: buildopk
